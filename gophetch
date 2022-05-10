@@ -1,0 +1,76 @@
+#! /usr/bin/python3
+# Isaac Ganoung
+import sys # For writing to stderr
+import os # For clearing screen
+from user_interaction import *
+from gopher import *
+
+
+if __name__ == '__main__':
+    url = ""
+    line_map = {}
+    gopher_buffer = []
+    def get_url_from_number(number):
+        try:
+            line_number = line_map[number]
+        except KeyError as error:
+            raise RuntimeError(str(error) + " is not a valid link")
+        line = gopher_buffer[line_number]
+        if line.path == None:
+            line_url = "gopher://" + line.server.decode()
+        else:
+            line_url = "gopher://" + line.server.decode() + line.path.decode()
+        return line_url,line.gopher_type
+    while True:
+        try:
+            current_line = get_input(url)
+            if current_line[0] == 'goto_url':
+                temp_url = url
+                temp_buffer = gopher_buffer
+                temp_map = line_map
+                try:
+                    if current_line[1].isdigit():
+                        new_url,file_type = get_url_from_number(int(current_line[1]))
+                        if file_type != 'submenu':
+                            raise RuntimeError("Can only navigate to directories, please download this file instead")
+                        print("Downloading . . .",end='\r')
+                        url,(gopher_buffer,line_map) = goto_url(new_url)
+                    else:
+                        print("Downloading . . .",end='\r')
+                        url,(gopher_buffer,line_map) = goto_url(current_line[1])
+                except IndexError as error: # Prevent random crashes from bad buffers
+                    url = temp_url
+                    gopher_buffer = temp_buffer
+                    line_map = temp_map
+                    raise RuntimeError("Please try again.")
+            elif current_line[0] == 'download':
+                print("Downloading . . .",end='\r')
+                download_file(get_url_from_number(current_line[1])[0])
+            elif current_line == 'reload':
+                temp_url = url
+                temp_buffer = gopher_buffer
+                temp_map = line_map
+                try:
+                    if url == "":
+                        raise RuntimeError("Unable to reload - please navigate to a directory first")
+                    print("Downloading . . .",end='\r')
+                    url,(gopher_buffer,line_map) = goto_url(url)
+                except IndexError as error: # Prevent random crashes from bad buffers
+                    url = temp_url
+                    gopher_buffer = temp_buffer
+                    line_map = temp_map
+                    raise RuntimeError("Please try again.")
+            elif current_line == 'print':
+                if url == "":
+                    raise RuntimeError("Unable to print - please navigate to a directory first")
+                print_gopher_buffer(gopher_buffer)
+            elif current_line == 'clear':
+                if os.name == 'posix':
+                    os.system('clear')
+                elif os.name == 'nt':
+                    os.system('cls')
+        except EOFError:
+            print("\nBye!")
+            break
+        except RuntimeError as error:
+            sys.stderr.write(str(error) + "\n")
