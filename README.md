@@ -12,14 +12,14 @@ Gopher is best thought of as a directory listing. Each page is an annotated dire
 
 To run the program, run the `gophetch` file. It is executable with `./gophetch` if you have a Python interpreter at `/usr/bin/python3`, otherwise it can be invoked with `python gophetch`.
 
-| Command  | Description               |
-|----------|---------------------------|
-| `r`      | Reload                    |
-| `g`      | Goto URL or linked buffer |
-| `d`      | Download                  |
-| `p`      | Print Buffer              |
-| ``     | Exit (Sends EOF)          |
-| ` RET` | Clear screen              |
+| Command           | Description               |
+|-------------------|---------------------------|
+| `r`               | Reload                    |
+| `g`               | Goto URL or linked buffer |
+| `d`               | Download                  |
+| `p`               | Print Buffer              |
+| ` (C-d)`         | Exit (Sends EOF)          |
+| ` RET (C-l RET)` | Clear screen              |
 
 
 `p` prints link numbers in front of directory links and downloadable files. `☰` represents a directory link.
@@ -40,7 +40,7 @@ To run the program, run the `gophetch` file. It is executable with `./gophetch` 
 `g 7`
 `p`
 `d 0`
-``
+`` `C-d`
 
 # Useful Sites
 
