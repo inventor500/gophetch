@@ -74,3 +74,5 @@ if __name__ == '__main__':
             break
         except RuntimeError as error:
             sys.stderr.write(str(error) + "\n")
+        except socket.gaierror as error:
+            sys.stderr.write(str(error) + "\n")
